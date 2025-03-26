@@ -11,10 +11,9 @@ def parse_ip_address(line):
     ip_pattern = re.compile(r'ip address (\d+\.\d+\.\d+\.\d+) (\d+\.\d+\.\d+\.\d+)')
     match = ip_pattern.search(line)
     if match:
-        try:
-            return ipaddress.IPv4Interface(f"{match.group(1)}/{match.group(2)}")
-        except NoneIP:
-            return None
+        return ipaddress.IPv4Interface(f"{match.group(1)}/{match.group(2)}")
+    else:
+        return None
 
 
 # Функция для получения всех конфигурационных файлов в текущей директории
@@ -53,6 +52,11 @@ def configs():
 def config(hostname):
     ips = extract_ips_for_host(hostname)
     return jsonify(ips)
+
+
+@app.get('/favicon.ico')
+def Icon():
+    return '<head> <link rel="icon" href="favicon.ico" /> </head>'
 
 if __name__ == '__main__':
     app.run(debug=True, host='localhost', port=5000)
