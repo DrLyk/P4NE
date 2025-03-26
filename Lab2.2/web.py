@@ -44,7 +44,9 @@ def home():
     hostnames = [os.path.splitext(f)[0] for f in get_config_files()]
     links = generate_host_links(hostnames[:3])
     return f"""<head><title>IPs</title></head>
-    <p>Используйте <a href=../configs>Полный перечень хостов</a> для просмотра всех хостов или /config/&lt;hostname&gt; для IP-адресов конкретного хоста.</p>
+    <p>Используйте <a href=../configs>Полный перечень хостов</a> для просмотра всех хостов</p>
+    <p>Перейдите по ссылке: /config/&lt;hostname&gt для просмотра IP-адресов конкретного хоста ;</p>
+    <p>Или выберете из списка первых 3х хостов:</p>
     <ol>{links}</ol>
     """
 
