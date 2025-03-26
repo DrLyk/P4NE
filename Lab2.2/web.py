@@ -1,7 +1,7 @@
 import os
 import re
 import ipaddress
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, send_from_directory
 
 app = Flask(__name__)
 
