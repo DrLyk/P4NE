@@ -1,7 +1,7 @@
 import os
 import re
 import ipaddress
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 
 app = Flask(__name__)
 
@@ -32,17 +32,27 @@ def extract_ips_for_host(hostname):
                     unique_ips.add(str(ip_interface))
     return list(unique_ips)
 
+# Генерация HTML списка ссылок для всех хостов
+def generate_host_links(hostnames):
+    return "".join(f"<li><a href='/config/{hostname}'>{hostname}</a></li>" for hostname in hostnames)
+
+
 # Корневой маршрут - справка
 @app.route('/')
 def home():
-    return "<p>Используйте <a href=../configs>/configs</a> для списка хостов и /config/&lt;hostname&gt; для IP-адресов конкретного хоста.</p>"
+    # Формируем ссылки для каждого хоста
+    hostnames = [os.path.splitext(f)[0] for f in get_config_files()]
+    links = generate_host_links(hostnames[:3])
+    return f"""<head><title>IPs</title></head>
+    <p>Используйте <a href=../configs>Полный перечень хостов</a> для просмотра всех хостов или /config/&lt;hostname&gt; для IP-адресов конкретного хоста.</p>
+    <ol>{links}</ol>
+    """
 
 # Маршрут для получения списка хостов
 @app.route('/configs')
 def configs():
-    config_files = get_config_files()
-    hostnames = [os.path.splitext(f)[0] for f in config_files]
-    links = ""
+    hostnames = [os.path.splitext(f)[0] for f in get_config_files()]
+    links = generate_host_links(hostnames)
     for hostname in hostnames:
         links += f"<p><a href='/config/{hostname}'>{hostname}</a></p>"
     return links
@@ -55,8 +65,8 @@ def config(hostname):
 
 
 @app.get('/favicon.ico')
-def Icon():
-    return '<head> <link rel="icon" href="favicon.ico" /> </head>'
+def favicon():
+    return send_from_directory(app.root_path, 'favicon.ico', mimetype='image/x-icon')
 
 if __name__ == '__main__':
     app.run(debug=True, host='localhost', port=5000)
