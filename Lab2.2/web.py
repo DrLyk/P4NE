@@ -55,15 +55,22 @@ def home():
 def configs():
     hostnames = [os.path.splitext(f)[0] for f in get_config_files()]
     links = generate_host_links(hostnames)
-    for hostname in hostnames:
-        links += f"<p><a href='/config/{hostname}'>{hostname}</a></p>"
-    return links
+    return f"""<head><title>IPs</title></head>
+    <ol>{links}</ol>"""
 
 # Маршрут для получения IP-адресов конкретного хоста
 @app.route('/config/<hostname>')
 def config(hostname):
     ips = extract_ips_for_host(hostname)
-    return jsonify(ips)
+    return  f"""<head>
+    <title>IP-адреса для {hostname}</title>
+</head>
+<body>
+    <h3>IP-адреса для {hostname}:</h3>
+    <ol>
+        {''.join([f'<li>{ip}</li>' for ip in ips])}
+    </ol>
+</body>"""
 
 
 @app.get('/favicon.ico')
